@@ -7,6 +7,8 @@ The dol-sensors integration is split in two parts.
 - Http API
 - Service bus queue subscriptions 
 
+![integratoroverview.png](integrator-overview.png)
+
 ## Http API
 
 The http API is where you register new devices, configure and update them and tell devices to run certain commands. All this is initiated from your side, either by the end-user or by your overall system. 
