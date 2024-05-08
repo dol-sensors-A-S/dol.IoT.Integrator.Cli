@@ -1,7 +1,7 @@
 ## Introduction
 
 This project is an example of how to communicate with dol-sensors iot integration API.
-For a general introduction on the API look [here](Integrator API getting started.md)
+For a general introduction on the API see `Integrator API getting started.md`.
 
 This cli program doesn't work if you don't have an `integrator account` in the API - see the getting started doc. 
 
@@ -78,5 +78,6 @@ I now have a file called data.csv containing all the measurements from the queue
 > dotnet run -- graph-data data.csv
 
 ```
-Gives me a number of new .png files containing a graph of the measurements, split by sensor and again by measurement type.
-example ![graphexample](./resources/000ecd02c131-idol139Tester-CO2.png)
+This creates a number of new .png files containing a graph of the measurements, split by sensor and again by measurement type.  
+Example:  
+![graphexample](./resources/000ecd02c131-idol139Tester-CO2.png)
