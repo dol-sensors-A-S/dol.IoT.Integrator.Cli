@@ -1,13 +1,3 @@
----
-created: 27-11-2023
-tags:
-  - external
-  - api
-  - cloud
-  - Integration
-  - getting-started
-author: Michael Skaanning
----
 # Getting started with dol-sensors IoT integration 
 
  

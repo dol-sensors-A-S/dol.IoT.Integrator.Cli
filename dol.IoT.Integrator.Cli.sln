@@ -6,8 +6,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 	ProjectSection(SolutionItems) = preProject
 		global.json = global.json
 		readme.md = readme.md
-		Integrator API getting started.md = Integrator API getting started.md
-		resources\overview.png = resources\overview.png
+		resources\Integrator-API-getting-started.md = resources\Integrator-API-getting-started.md
 	EndProjectSection
 EndProject
 Global
