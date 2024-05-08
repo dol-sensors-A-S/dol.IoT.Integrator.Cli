@@ -1,7 +1,7 @@
 ## Introduction
 
 This project is an example of how to communicate with dol-sensors iot integration API.
-For a general introduction on the API see `Integrator-API-getting-started.md`.
+For a general introduction on the API see `resources/Integrator-API-getting-started.md`.
 
 This cli program doesn't work if you don't have an `integrator account` in the API - see the getting started doc. 
 
