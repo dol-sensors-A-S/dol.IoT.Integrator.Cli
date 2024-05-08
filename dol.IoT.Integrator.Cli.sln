@@ -1,0 +1,24 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dol.IoT.Integrator.Cli", "src\dol.IoT.Integrator.Cli\dol.IoT.Integrator.Cli.csproj", "{1B54CEA2-43BC-4B0E-8FEB-2DF5352AB204}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{3D7C9097-2C84-415A-BF82-A32CF287B7E3}"
+	ProjectSection(SolutionItems) = preProject
+		global.json = global.json
+		readme.md = readme.md
+		Integrator API getting started.md = Integrator API getting started.md
+		resources\overview.png = resources\overview.png
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1B54CEA2-43BC-4B0E-8FEB-2DF5352AB204}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B54CEA2-43BC-4B0E-8FEB-2DF5352AB204}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B54CEA2-43BC-4B0E-8FEB-2DF5352AB204}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B54CEA2-43BC-4B0E-8FEB-2DF5352AB204}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
