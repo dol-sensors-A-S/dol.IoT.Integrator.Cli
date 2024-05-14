@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.Reflection.Metadata.Ecma335;
 using Azure.Messaging.ServiceBus;
 using Cocona;
 using CsvHelper;
@@ -16,6 +17,8 @@ public static class ReadFromServiceBusQueue
         app.AddCommand("read-queue", async (
             [Argument(Description = "Saves the read data in this file. Supports .json and .csv files")]
             string resultFileName,
+            [Option('k', Description = "keep alive - set this flag to keep the reader running (only works for .csv)")]
+            bool keepAlive,
             IIntegratorApiClient integrationApiClient) =>
         {
             var connections = await integrationApiClient.GetIntegratorServiceBusQueueConnections();
@@ -44,18 +47,20 @@ public static class ReadFromServiceBusQueue
             }
             else
             {
-                await WriteCsv(receiver, resultFileName, cts);
+                await WriteCsv(receiver, resultFileName, keepAlive, cts);
             }
         }).WithIntegratorDescription("Consume data from your connected data queue and write to file", hasSideEffects: true);
     }
 
-    private static async Task WriteCsv(ServiceBusReceiver receiver, string resultFileName, CancellationTokenSource cts)
+    private static async Task WriteCsv(ServiceBusReceiver receiver, string resultFileName, bool keepAlive, CancellationTokenSource cts)
     {
+        var fileExists = File.Exists(resultFileName);
         var config = new CsvConfiguration(CultureInfo.InvariantCulture)
         {
             Delimiter = ",",
             Mode = CsvMode.Escape,
-            NewLine = Environment.NewLine
+            NewLine = Environment.NewLine,
+            HasHeaderRecord = !fileExists
         };
 
         try
@@ -64,16 +69,19 @@ public static class ReadFromServiceBusQueue
             await using var csv = new CsvWriter(writer, config);
             csv.Context.RegisterClassMap<SensorDataCosmosMap>();
 
-            csv.WriteHeader<SensorDataCosmos>();
-            csv.NextRecord();
-
             while (!cts.IsCancellationRequested)
             {
                 var msgs = await receiver.ReceiveMessagesAsync(maxMessages: 100, maxWaitTime: TimeSpan.FromSeconds(5), cancellationToken: cts.Token);
                 AnsiConsole.MarkupLine($"Received data x{msgs.Count}");
                 if (msgs.Count == 0)
                 {
-                    return;
+                    if (!keepAlive)
+                    {
+                        return;
+                    }
+
+                    await Task.Delay(TimeSpan.FromSeconds(60));
+                    continue;
                 }
 
                 List<SensorDataCosmos> messages = [];
@@ -85,6 +93,7 @@ public static class ReadFromServiceBusQueue
                 }
 
                 await csv.WriteRecordsAsync(messages, cts.Token);
+                await csv.FlushAsync();
             }
         }
         finally
