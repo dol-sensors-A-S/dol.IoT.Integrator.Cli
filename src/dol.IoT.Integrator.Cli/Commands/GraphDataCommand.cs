@@ -72,8 +72,8 @@ public static class GraphDataCommand
         {
             using var streamReader = new StreamReader(resultFileName);
             using var csv = new CsvReader(streamReader, CultureInfo.InvariantCulture);
-            csv.Context.RegisterClassMap<SensorDataCosmosMap>();
-            var records = csv.GetRecords<SensorDataCosmos>().ToArray();
+            csv.Context.RegisterClassMap<SensorDataMap>();
+            var records = csv.GetRecords<SensorData>().ToArray();
             return new JsonResults { results = records };
         }
 

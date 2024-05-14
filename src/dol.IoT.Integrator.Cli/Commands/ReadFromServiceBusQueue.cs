@@ -59,7 +59,7 @@ public static class ReadFromServiceBusQueue
         {
             await using var writer = new StreamWriter(resultFileName);
             await using var csv = new CsvWriter(writer, config);
-            csv.Context.RegisterClassMap<SensorDataCosmosMap>();
+            csv.Context.RegisterClassMap<SensorDataMap>();
 
             while (!cts.IsCancellationRequested)
             {
@@ -76,10 +76,10 @@ public static class ReadFromServiceBusQueue
                     continue;
                 }
 
-                List<SensorDataCosmos> messages = [];
+                List<SensorData> messages = [];
                 foreach (var msg in msgs)
                 {
-                    var message = msg.Body.ToObjectFromJson<SensorDataCosmos>();
+                    var message = msg.Body.ToObjectFromJson<SensorData>();
 
                     messages.Add(message);
                 }
@@ -104,9 +104,9 @@ public static class ReadFromServiceBusQueue
     }
 }
 
-public sealed class SensorDataCosmosMap : ClassMap<SensorDataCosmos>
+public sealed class SensorDataMap : ClassMap<SensorData>
 {
-    public SensorDataCosmosMap()
+    public SensorDataMap()
     {
         Map(m => m.id).Index(0).Name("id");
         Map(m => m.deviceId).Index(1).Name("deviceId");
@@ -132,7 +132,7 @@ public sealed class SensorDataCosmosMap : ClassMap<SensorDataCosmos>
     }
 }
 
-public class SensorDataCosmos
+public class SensorData
 {
     public string id { get; set; } = "";
     public string deviceId { get; set; } = "";
@@ -160,7 +160,7 @@ public class SensorDataCosmos
 
 public class JsonResults
 {
-    public SensorDataCosmos[] results { get; set; } = [];
+    public SensorData[] results { get; set; } = [];
 }
 
 public record DataPoint(string deviceId, string sensorId, string sensorName, decimal value, string unit, string type, long timestamp);
