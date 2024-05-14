@@ -1,5 +1,4 @@
 using System.Globalization;
-using System.Reflection.Metadata.Ecma335;
 using Azure.Messaging.ServiceBus;
 using Cocona;
 using CsvHelper;
@@ -15,9 +14,9 @@ public static class ReadFromServiceBusQueue
     public static void AddReadFromServiceBusQueue(this CoconaApp app, CancellationTokenSource cts)
     {
         app.AddCommand("read-queue", async (
-            [Argument(Description = "Saves the read data in this file. Supports .json and .csv files")]
+            [Argument(Description = "Saves the data read from queue in this .csv file")]
             string resultFileName,
-            [Option('k', Description = "keep alive - set this flag to keep the reader running (only works for .csv)")]
+            [Option('k', Description = "keep alive - set this flag to keep the reader running, if not set the program will exist after it empties the queue")]
             bool keepAlive,
             IIntegratorApiClient integrationApiClient) =>
         {
@@ -41,14 +40,7 @@ public static class ReadFromServiceBusQueue
                 ReceiveMode = ServiceBusReceiveMode.ReceiveAndDelete
             });
 
-            if (fileType.Equals("json"))
-            {
-                await WriteJson(receiver, resultFileName, cts);
-            }
-            else
-            {
-                await WriteCsv(receiver, resultFileName, keepAlive, cts);
-            }
+            await WriteCsv(receiver, resultFileName, keepAlive, cts);
         }).WithIntegratorDescription("Consume data from your connected data queue and write to file", hasSideEffects: true);
     }
 
@@ -102,49 +94,12 @@ public static class ReadFromServiceBusQueue
         }
     }
 
-    private static async Task WriteJson(ServiceBusReceiver receiver, string resultFileName, CancellationTokenSource cts)
-    {
-        await using var fileStream = File.Create(resultFileName);
-        fileStream.Write("""{ "results": ["""u8);
-        var comma = ","u8.ToArray();
-        var addComma = false;
-
-        try
-        {
-            while (!cts.IsCancellationRequested)
-            {
-                var msgs = await receiver.ReceiveMessagesAsync(maxMessages: 100, maxWaitTime: TimeSpan.FromSeconds(2), cancellationToken: cts.Token);
-                AnsiConsole.MarkupLine($"Received data x{msgs.Count}");
-                if (msgs.Count == 0)
-                {
-                    return;
-                }
-
-                foreach (var msg in msgs)
-                {
-                    if (addComma)
-                    {
-                        fileStream.Write(comma);
-                    }
-
-                    addComma = true;
-                    fileStream.Write(msg.Body);
-                }
-            }
-        }
-        finally
-        {
-            fileStream.Write(""" ]}"""u8);
-        }
-    }
-
     private static string GetFileType(string resultFileName)
     {
         return resultFileName switch
         {
             _ when resultFileName.EndsWith(".csv") => "csv",
-            _ when resultFileName.EndsWith(".json") => "json",
-            _ => throw new ArgumentException($"Unknown file type in filename {resultFileName}"),
+            _ => throw new ArgumentException($"Unknown file type in filename {resultFileName}, must be .csv file"),
         };
     }
 }
