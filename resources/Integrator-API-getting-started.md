@@ -72,8 +72,8 @@ First, we need to register a new **login** to start using the API.
 `POST /api/auth/register` to register an account.
 ```json
 {
-  "email": "mic@dol-sensors.com",
-  "password": "SomeLongPassword123!"
+  "email": "mic@dol-sensors.com",
+  "password": "SomeLongPassword123!"
 }
 ```
 
@@ -87,8 +87,8 @@ With our new login now attached to an integrator, we can start using the API.
 `POST /api/auth/login` to receive a bearer token.
 ```json
 {
-  "email": "mic@dol-sensors.com",
-  "password": "SomeLongPassword123!"
+  "email": "mic@dol-sensors.com",
+  "password": "SomeLongPassword123!"
 }
 ```
 
@@ -97,9 +97,9 @@ response looks like this
 ```json
 {
   "tokenType": "Bearer",
-  "accessToken": "............................",
-  "expiresIn": 3600,
-  "refreshToken": "............................"
+  "accessToken": "............................",
+  "expiresIn": 3600,
+  "refreshToken": "............................"
 }
 ```
 
@@ -121,11 +121,11 @@ To register a new device, we "claim" it as ours. This means our integrator now "
 `POST /api/devices/claim`
 ```json
 {
-  "macAddress": "00abcd1234ef", // this is written on the actual physical device
-  "key": "someKey", // also written on the device
-  "deviceType": "IDOL64", // the type of dol-sensors device
-  "owner": "Optional", // use this only if you want some identifying information about the device saved in dol-sensors system (like a customer id or similar)
-  "deviceName": "Optional" // use this only if you want some identifying information about the device saved in dol-sensors system
+  "macAddress": "00abcd1234ef", // this is written on the actual physical device
+  "key": "someKey", // also written on the device
+  "deviceType": "IDOL64", // the type of dol-sensors device
+  "owner": "Optional", // use this only if you want some identifying information about the device saved in dol-sensors system (like a customer id or similar)
+  "deviceName": "Optional" // use this only if you want some identifying information about the device saved in dol-sensors system
 }
 ```
 
@@ -232,15 +232,15 @@ This example is for a DOL53 - an ammonia sensor.
 `POST /api/devices/{mac}/sensor`
 ```json
 {
-  "devEUI": "..........", // found on label on the sensor
-  "name": "string", // some identifying name so the sensor can easily be identified 
-  "type": "DOL53",
-  "sampleRate": 600, // the sensors sample rate in seconds
-  "sensorDetailsRequest": { // all this is optional
-    "productName": "Optional",
-    "productionVersion": "Optional",
-    "serialNumber": "Optional"
-  }
+  "devEUI": "..........", // found on label on the sensor
+  "name": "string", // some identifying name so the sensor can easily be identified 
+  "type": "DOL53",
+  "sampleRate": 600, // the sensors sample rate in seconds
+  "sensorDetailsRequest": { // all this is optional
+    "productName": "Optional",
+    "productionVersion": "Optional",
+    "serialNumber": "Optional"
+  }
 }
 ```
 
@@ -315,11 +315,11 @@ To start subscribing to the data our claimed devices produce, we can get the det
 `GET /api/management/queue`
 ```json
 {
-  "dataQueueConnection": "...................",
-  "dataQueueName": "data queue name",
+  "dataQueueConnection": "...................",
+  "dataQueueName": "data queue name",
   "dataUsingPrimaryKey": true,
-  "statusQueueConnection": "....................",
-  "statusQueueName": "status queue name",
+  "statusQueueConnection": "....................",
+  "statusQueueName": "status queue name",
   "statusUsingPrimaryKey": true,
   "dataQueueMessageCount": 0,
   "dataQueueDeadLetterCount": 0,
