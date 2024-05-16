@@ -15,7 +15,8 @@ public static class GetApiToken
             var (token, expires) = await loginService.GetToken();
             AnsiConsole.WriteLine($"Your api token is");
             AnsiConsole.WriteLine();
-            AnsiConsole.MarkupLine($"[red]{token}[/]");
+            Console.Write(token);
+            AnsiConsole.WriteLine();
             AnsiConsole.WriteLine();
             AnsiConsole.MarkupLine($"[blue]expires {expires}[/]");
         }).WithIntegratorDescription("Get api token to use with the integration API. It expires after an hour", hasSideEffects: false);
