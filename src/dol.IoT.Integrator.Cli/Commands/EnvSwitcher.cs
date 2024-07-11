@@ -18,13 +18,13 @@ public static class EnvSwitcher
             var config = JsonSerializer.Deserialize<Config>(readAllText)!;
 
             AnsiConsole.MarkupLine($"Currently using [red]{config.Env}[/]");
-            
+
             if (string.IsNullOrWhiteSpace(selectEnv))
             {
                 var envToUse = AnsiConsole.Prompt(
                     new SelectionPrompt<string>()
                         .Title("[green]Select env to use[/]")
-                        .AddChoices("Production", "Qa", "Local"));
+                        .AddChoices("Production", "Qa"));
 
                 config.Env = Enum.Parse<Env>(envToUse, true);
                 await File.WriteAllTextAsync(path, JsonSerializer.Serialize(config));

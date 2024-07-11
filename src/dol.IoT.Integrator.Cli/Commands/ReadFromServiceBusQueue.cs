@@ -57,7 +57,7 @@ public static class ReadFromServiceBusQueue
 
         try
         {
-            await using var writer = new StreamWriter(resultFileName);
+            await using var writer = new StreamWriter(resultFileName, append: true);
             await using var csv = new CsvWriter(writer, config);
             csv.Context.RegisterClassMap<SensorDataMap>();
 
