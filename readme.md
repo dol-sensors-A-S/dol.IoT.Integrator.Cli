@@ -22,7 +22,7 @@ Each command will either talk directly to the http API or will listen to one of 
 ## Running commands
 
 To run a command just write the command name after `dotnet run -- `.
-The -- is needed so the arguments added with -flags is passed along to this program and not the dotnet sdk.
+The -- is needed so the arguments added with -flags is passed along to this program and not the dotnet command itself.
 To see what a command expects, run the command with the -h flag.  
 Example 
 
