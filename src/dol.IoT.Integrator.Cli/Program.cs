@@ -40,7 +40,10 @@ app.AddReadFromServiceBusQueue(cts);
 app.AddRemoveDeviceClaim();
 app.AddRemoveSensorFromDevice();
 app.AddWatchServiceBusQueue(cts);
+app.AddUnclaimDevice();
+app.AddPatchWiredSensors();
 app.AddEnvSwitcher();
 app.AddClearEmail();
+
 
 app.Run();

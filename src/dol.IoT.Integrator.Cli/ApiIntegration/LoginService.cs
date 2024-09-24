@@ -1,6 +1,6 @@
 using System.Net;
 using System.Net.Http.Json;
-using dol.IoT.Integrator.Cli.Models;
+using dol.IoT.Models.Public.Auth;
 using Spectre.Console;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -15,7 +15,7 @@ public class LoginService : ILoginService
     public LoginService(Config config)
     {
         _config = config;
-        
+
         var httpClient = new HttpClient();
         httpClient.Timeout = TimeSpan.FromSeconds(30);
         var uriString = config.Env.BaseUrl();
@@ -39,7 +39,7 @@ public class LoginService : ILoginService
 
         return await Login();
     }
-    
+
     private async Task<(string Token, string Expires)> Login()
     {
         var email = _config.Email;
@@ -55,7 +55,7 @@ public class LoginService : ILoginService
 
         _config.Email = email;
         await _config.Save();
-        
+
         var password = AnsiConsole.Prompt(new TextPrompt<string>("password").Secret().PromptStyle("red"));
         var loginResponse = await Login(email, password);
         await File.WriteAllBytesAsync(FileName, JsonSerializer.SerializeToUtf8Bytes(loginResponse));
@@ -67,7 +67,7 @@ public class LoginService : ILoginService
     {
         var request = new LoginRequest
         {
-            Email = userEmail, 
+            Email = userEmail,
             Password = password
         };
 
@@ -82,7 +82,7 @@ public class LoginService : ILoginService
 
         throw new Exception($"Could not authenticate to dol integration api {_client.BaseAddress}");
     }
-    
+
     private async Task<(string Token, string Expires)> RefreshToken(string refreshToken)
     {
         var request = new { refreshToken };
@@ -98,5 +98,14 @@ public class LoginService : ILoginService
         }
 
         return await Login();
+    }
+
+    public class LoginResponse
+    {
+        public required string tokenType { get; set; }
+        public required string accessToken { get; set; }
+        public required int expiresIn { get; set; }
+        public required string refreshToken { get; set; }
+        public DateTime Expires { get; set; }
     }
 }

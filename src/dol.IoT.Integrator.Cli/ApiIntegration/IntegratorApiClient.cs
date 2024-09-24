@@ -1,5 +1,6 @@
 using System.Net.Http.Json;
-using dol.IoT.Integrator.Cli.Models;
+using dol.IoT.Models.Public.DeviceApi;
+using dol.IoT.Models.Public.ManagementApi;
 
 namespace dol.IoT.Integrator.Cli.ApiIntegration;
 
@@ -35,7 +36,7 @@ public class IntegratorApiClient : IIntegratorApiClient
         return result;
     }
 
-    public async Task<(bool Success, string Response)> AddSensorToDevice(string mac, AddSensorRequest request)
+    public async Task<(bool Success, string Response)> AddSensorToDevice(string mac, AddSensorToDeviceRequest request)
     {
         var response = await _client.PostAsJsonAsync($"api/devices/{mac}/sensor", request);
         var content = await response.Content.ReadAsStringAsync();
@@ -73,5 +74,18 @@ public class IntegratorApiClient : IIntegratorApiClient
         return null;
     }
 
+    public async Task<(bool Success, string Response)> UnclaimDevice(
+        string mac)
+    {
+        var result = await _client.DeleteAsync($"/api/devices/claim/{mac}");
+        var content = await result.Content.ReadAsStringAsync();
+        return (result.IsSuccessStatusCode, content);
+    }
 
+    public async Task<(bool Success, string Response)> UpdateWiredSensors(string mac, UpdateWiredSensorsRequest request)
+    {
+        var result = await _client.PutAsJsonAsync($"/api/devices/{mac}/wiredSensor", request);
+        var content = await result.Content.ReadAsStringAsync();
+        return (result.IsSuccessStatusCode, content);
+    }
 }

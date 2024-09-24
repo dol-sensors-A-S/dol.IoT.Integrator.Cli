@@ -1,8 +1,8 @@
 ﻿using Azure.Messaging.ServiceBus;
 using Cocona;
 using dol.IoT.Integrator.Cli.ApiIntegration;
-using dol.IoT.Integrator.Cli.Models;
 using dol.IoT.Integrator.Cli.Util;
+using dol.IoT.Models.Public.ManagementApi;
 using Spectre.Console;
 
 namespace dol.IoT.Integrator.Cli.Commands;

@@ -1,7 +1,7 @@
 using Cocona;
 using dol.IoT.Integrator.Cli.ApiIntegration;
-using dol.IoT.Integrator.Cli.Models;
 using dol.IoT.Integrator.Cli.Util;
+using dol.IoT.Models.Public.DeviceApi;
 using Spectre.Console;
 
 namespace dol.IoT.Integrator.Cli.Commands;
@@ -26,13 +26,18 @@ public static class AddSensorToDeviceCommand
         {
             mac ??= AskFor.This("MAC address");
 
-            var addSensorRequest = new AddSensorRequest
+            var type = sensorType ?? AskFor.GetSensorType();
+            if (!Enum.TryParse(type, true, out SensorType sensorTypeEnum))
             {
-                Name = name ?? AskFor.This("Sensor name"),
-                DevEui = devEui ?? AskFor.This("Sensor DevEUI"),
-                Type = sensorType ?? AskFor.SensorType(),
-                SampleRate = sampleRate ?? AskFor.This<int>("Sample rate (seconds)")
-            };
+                AnsiConsole.MarkupLine($"Unknown sensor type {type}");
+                return;
+            }
+
+            var addSensorRequest = new AddSensorToDeviceRequest(
+                Name: name ?? AskFor.This("Sensor name"),
+                DevEui: devEui ?? AskFor.This("Sensor DevEUI"),
+                Type: sensorTypeEnum,
+                SampleRate: sampleRate ?? AskFor.This<int>("Sample rate (seconds)"));
 
             var response = await integrationApiClient.AddSensorToDevice(mac, addSensorRequest);
             AnsiConsole.MarkupLine(response.Success

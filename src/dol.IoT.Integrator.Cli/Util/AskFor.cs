@@ -1,4 +1,4 @@
-using dol.IoT.Integrator.Cli.Models;
+using dol.IoT.Models.Public.DeviceApi;
 using Spectre.Console;
 
 namespace dol.IoT.Integrator.Cli.Util;
@@ -17,15 +17,15 @@ public static class AskFor
         return AnsiConsole.Ask<string>(question);
     }
 
-    public static string SensorType()
+    public static string GetSensorType()
     {
         var sensorType = AnsiConsole.Prompt(
             new SelectionPrompt<string>()
                 .Title("[green]Select sensor type[/]")
-                .AddChoices(nameof(LoraSensorType.DOL16),
-                    nameof(LoraSensorType.DOL53),
-                    nameof(LoraSensorType.DOL90),
-                    nameof(LoraSensorType.iDOL139)));
+                .AddChoices(nameof(SensorType.DOL16),
+                    nameof(SensorType.DOL53),
+                    nameof(SensorType.DOL90),
+                    nameof(SensorType.IDOL139)));
 
         return sensorType;
     }
@@ -42,7 +42,8 @@ public static class AskFor
         if (deviceType.Equals("any"))
             return null;
 
-        return deviceType.ToDeviceType().ToDeviceTypeString();
+        Enum.TryParse(deviceType, true, out DeviceType deviceTypeEnum);
+        return deviceTypeEnum.ToString();
     }
 
     public static string? ConnectionState()
