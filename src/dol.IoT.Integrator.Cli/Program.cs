@@ -37,13 +37,13 @@ app.AddGetApiToken();
 app.AddGetDevice();
 app.AddGraphData(cts);
 app.AddReadFromServiceBusQueue(cts);
-app.AddRemoveDeviceClaim();
 app.AddRemoveSensorFromDevice();
+app.AddRequeueData();
 app.AddWatchServiceBusQueue(cts);
 app.AddUnclaimDevice();
+app.AddUpdateSensor();
 app.AddPatchWiredSensors();
 app.AddEnvSwitcher();
 app.AddClearEmail();
-
 
 app.Run();

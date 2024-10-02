@@ -23,13 +23,6 @@ public class IntegratorApiClient : IIntegratorApiClient
         return (result.IsSuccessStatusCode, await result.Content.ReadAsStringAsync());
     }
 
-    public async Task<(bool Success, string Response)> RemoveDeviceClaim(string mac)
-    {
-        var result = await _client.DeleteAsync($"api/devices/claim/{mac}");
-
-        return (result.IsSuccessStatusCode, await result.Content.ReadAsStringAsync());
-    }
-
     public async Task<QueueConnectionInfoResponse?> GetIntegratorServiceBusQueueConnections()
     {
         var result = await _client.GetFromJsonAsync<QueueConnectionInfoResponse>("api/management/queue");
@@ -87,5 +80,22 @@ public class IntegratorApiClient : IIntegratorApiClient
         var result = await _client.PutAsJsonAsync($"/api/devices/{mac}/wiredSensor", request);
         var content = await result.Content.ReadAsStringAsync();
         return (result.IsSuccessStatusCode, content);
+    }
+
+    public async Task<(bool Success, string Response)> RequeueData(RequeueDeviceDataRequest request)
+    {
+        var result =  await _client.PostAsJsonAsync("api/management/data/requeue", request);
+        return result.IsSuccessStatusCode
+            ? (true, await result.Content.ReadAsStringAsync())
+            : (false, "");
+    }
+
+    public async Task<(bool Success, string Response)> UpdateSensorToDevice(
+        string mac,
+        UpdateSensorToDeviceRequest request)
+    {
+        var response = await _client.PutAsJsonAsync($"api/devices/{mac}/sensor", request);
+        var content = await response.Content.ReadAsStringAsync();
+        return (response.IsSuccessStatusCode, content);
     }
 }
