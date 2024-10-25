@@ -24,7 +24,7 @@ All device data and status messages is placed in queues, from where you can read
 In order to integrate to dol-sensors iot devices, you need an integrator account.
 This in turn gives you access to the HTTP API and the data and status queues that contains the live data from devices.
 
-You only need one integrator account, not one for each user you have. The integrator account is *you (or more likely your company)*.
+You only need one integrator account, not one for each user you have. The integrator account is *you (or more correctly your system)*.
 The individual end-users that exists in your software / UI is not represented in the dol-sensors api. 
 
 ## Logins
@@ -305,7 +305,7 @@ Once again you can verify with the `GET /api/devices/{mac}` endpoint
 
 ##  Getting data
 
-When the integrator account was created, 2 new exclusive (service-bus) queues was created for our integrator. One for data messages and one for status updates from the devices. These are to two main integration points and where you will receive all the actual device data. 
+When the integrator account was created, 2 new exclusive (service-bus) queues was created for our integrator. One for data messages and one for status updates from the devices. These are the two main integration points and where you will receive all the actual device data. 
 
 To read from this service bus queue, you can use a client library in either javascript/typescript, python, dotnet or java. See [link to learn more](https://learn.microsoft.com/en-us/azure/service-bus-messaging/service-bus-messaging-overview#client-libraries). 
 More languages are supported (C, C++, Go, Ruby, PHP), as long as we can find a AMQP 1.0 protocol client. 
