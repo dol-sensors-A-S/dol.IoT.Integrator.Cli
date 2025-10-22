@@ -259,6 +259,8 @@ Verify by showing the device details from
   "createdAt": "2023-11-23T14:54:30Z",
   "updatedAt": "2023-11-23T14:54:30Z",
   "connectionState": "Connected",
+  "firmwareVersion": "2.2.0",
+  "isOnline": true,
   "lastActivityUtc": "2023-11-25T14:17:43Z",
   "cloudToDeviceMessages": 0,
   "sensors": [{
@@ -288,7 +290,8 @@ We can do this configuration with the following endpoint
     {
       "port": 1,
       "wiredSensorType": "DOL16",
-      "samplingRate": 60
+      "samplingRate": 60,
+	
     },
     {
       "port": 2,
@@ -296,6 +299,7 @@ We can do this configuration with the following endpoint
       "samplingRate": 60
     }
   ]
+}
 ```
 The ports 1, 2, 3 and 4 are available for configuration. 
 Like the PUT operation suggests, this endpoint will override the current configuration with the new configuration from the request.
@@ -342,7 +346,8 @@ The datamessages has the following format
   "value": 2.2, // the actual measurement 
   "type": "Ammonia",
   "unit": "ppm", // unit will tell you what the data in 'value' is. 
-  "timestamp": 1700572959 // unix time stamp in seconds
+  "timestamp": 1700572959 // unix time stamp in seconds of when it was taken
+  "_ts": 1700573015 // unix time stamp in seconds of when it was saved 
 }
 ```
 
@@ -351,7 +356,8 @@ Example
 ```json
 {
   "id": "9e0dccd4-e17e-4451-8505-9c6a111c6ce6",
-  "count": 24934, // total weight calculations last 24h 
+  "count": 24934, // total weight calculations last 24h
+  "CountDelta": 126, // number of new weight calculations since the previous report
   "minWeight": 92.8,
   "maxWeight": 122.67,
   "timespan": 3600, // seconds since last weight update
@@ -361,8 +367,9 @@ Example
   "lastCycleMeanWeight": 108.21, // mean weight over last timespan,
   "lastCycleMinWeight": 93.1,
   "lastCycleMaxWeight": 123.55,
-  "lastCycleSD": 8.12,
+  "lastCycleStandardDeviation": 8.12,
   "lastCycleSkewness": 2.12,
+  "withinSpec": true
   "deviceId": "ddeecdff015f",
   "sensorId": "ddeecdff015f",
   "sensorName": "some sensor name",
@@ -370,6 +377,7 @@ Example
   "type": "Weight",
   "unit": "kg",
   "timestamp": 1700572959 // unix time stamp in seconds
+  "_ts": 1700573015 // unix time stamp in seconds of when it was saved 
 }
 ```
 
@@ -392,6 +400,11 @@ Will notify on a connection change for the device. Can be either deviceConnected
     "timestamp": 1700151990
 }
 ```
+| Name   | Type   | Description |
+| :----: | :----: | :----: |
+| deviceId | string | Unique identifier of the device |
+| state | string | State of the device ("deviceConnected"/"deviceDisconnected") |
+| timestamp | long | Unix timestamp indicating when this message was generated |
 
 #### Subject/label = "SensorsInactive"
 
@@ -416,7 +429,19 @@ If a sensor starts sending data again, a new "SensorsInactive" message will get 
   "timestamp": 1700151990
 }
 ```
+##### SensorsInactive Message
+| Name   | Type   | Description|
+| :----: | :----: | :----: |
+| deviceId | string | Unique identifier of the IDOL64 device reporting the inactive sensors |
+| inactiveSensors | Array\<SensorObject\> | List of LoRa sensors that have stopped sending data |
+| timestamp | long | Unix timestamp indicating when this message was generated |
 
+##### SensorObject (Array Element)
+| Name   | Type   | Description|
+| :----: | :----: | :----: |
+| name | string | Human-readable name of the sensor |
+| devEui | string | Unique LoRa device identifier (DevEUI) of the sensor |
+| lastSeenAt | string | ISO 8601 timestamp of when the sensor was last heard from |
 #### Subject/label = "VisionStatus"
 
 For IDOL65 devices. 
@@ -424,17 +449,49 @@ Will report any changes to the status of the camera.
 ```json
 {
     "deviceId": "aabbccddeeff",
-    "isDirty": "Clean",
-    "calibration": "Done", 
-    "messages": [
-	    {
-	      "MessageId": 0,
-	      "MessageText": "In-pen calibration successful ",
-	      "MessagePayload": ""
-	    }
-    ],
+    "visionStatus": {
+		"isDirty": "Dirty",
+		"isDetectingDirty": "True",
+		"IsDeviceManuallyCalibrated": "True",
+		"calibration": "Required",
+		"calibrationLastUpdate": "2024-06-27T10:17:05Z",
+		"messages": [
+		    {
+		      "MessageId": 0,
+		      "MessageText": "In-pen calibration successful ",
+		      "MessagePayload": ""
+		    }
+	    ]
+	},
     "timestamp": 1700151990
+}
 ```
+#### Vision Status Message
+
+| Name | Type | Description |
+| :--- | :--- | :--- |
+| `deviceId` | string | Unique identifier of the IDOL65 device |
+| `visionStatus` | Object | Contains the vision system status information |
+| `timestamp` | long | Unix timestamp indicating when this message was generated |
+
+#### VisionStatus Object
+
+| Name | Type | Description |
+| :--- | :--- | :--- |
+| `isDirty` | string | Indicates if the camera lens is dirty ("Dirty"/"Clean"/"VeryDirty") |
+| `isDetectingDirty` | string | Indicates if the system is detecting dirt ("True"/"False") |
+| `IsDeviceManuallyCalibrated` | string | Indicates if manual calibration was performed ("True"/"False") |
+| `calibration` | string | Current calibration status ("Required"/"Done"/"Started") |
+| `calibrationLastUpdate` | string | ISO 8601 timestamp of the last calibration update |
+| `messages` | Array\<MessageObject\> | List of status messages from the vision system |
+
+#### MessageObject (Array Element)
+
+| Name | Type | Description |
+| :--- | :--- | :--- |
+| `MessageId` | integer | Unique identifier for the message |
+| `MessageText` | string | Human-readable message text |
+| `MessagePayload` | string | Additional payload data (if any) |
 
 ### Subject/label = "SensorBatteryUpdates"
 
