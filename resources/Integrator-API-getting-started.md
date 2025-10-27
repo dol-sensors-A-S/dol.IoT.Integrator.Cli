@@ -116,7 +116,7 @@ To refresh the accessToken we use the `/api/auth/refresh` endpoint with our refr
 ## Register new device (Claim device)
 
 All endpoints (except auth) require login and that our login is attached to an integrator.
-To register a new device, we "claim" it as ours. This means our integrator now "owns" this device. Data and status from the device will start being forwarded to the integrator queues.
+To register a new device, we "claim" it as ours. This means our integrator now "owns" this device. Data and status from the device will start being forwarded to the integrator queues. Without a claim on the devices most endpoints will return a failed request.
 
 `POST /api/devices/claim`
 ```json
@@ -129,7 +129,22 @@ To register a new device, we "claim" it as ours. This means our integrator now "
 }
 ```
 
-If you get an 200 OK back, the device is now claimed by your "integrator". 
+After attempting to claim a device, here are the possible outcomes:
+
+*   **✅ Success: `200 OK`**
+    *   The device has been successfully claimed by your integrator account.
+
+*   **❌ Error: `400 Bad Request`**
+    *   **Message:** `"Cannot claim this device, key invalid"`
+        *   **Meaning:** The device key you used is incorrect.
+        *   **Action:** Double-check the key. If correct, please **contact support**.
+    *   **Message:** `"Device has already been claimed"`
+        *   **Meaning:** The device is already registered to another account.
+        *   **Action:** Check your list of devices. If you don't see it, **contact support**.
+*   **❌ Error: `401 Unauthorized`**
+    *   **Message:** `""`
+        *   **Meaning:** You are not logged in.
+        *   **Action:** Try logging in again. If error persist, please **contact support**.
 
 ## View devices
 
@@ -153,9 +168,21 @@ To get an overview of all our (integrators) devices call
 ```
 
 Use the optional query parameters page and pageSize to manipulate paginated response of devices. 
-Use the optional owner query parameter to filter devices by owner. 
+Use the optional owner query parameter to filter devices by owner.
 
-To get more information about a given device call
+After attempting to get the list of devices, here are the possible outcomes:
+
+*   **✅ Success: `200 OK`**
+    *   The list of devices is succesfully retrieved, if empty means you haven't claimed any devices yet.
+
+*   **❌ Error: `403 Bad Request`**
+    *   **Message:** `""`
+        *   **Meaning:** Your account is not yet an integrator.
+        *   **Action:** Please **contact support**.
+*   **❌ Error: `401 Unauthorized`**
+    *   **Message:** `""`
+        *   **Meaning:** You are not logged in.
+        *   **Action:** Try logging in again. If error persist, please **contact support**.
 
 `GET /api/devices/{mac}`
 ```json
@@ -201,6 +228,19 @@ To get more information about a given device call
   "cameraStatus": null
 }
 ```
+After attempting to get the device, here are the possible outcomes:
+
+*   **✅ Success: `200 OK`**
+    *   The device is succesfully retrieved.
+
+*   **❌ Error: `404 Not found`**
+    *   **Message:** `"Could not find device x"`
+        *   **Meaning:** The device is not claimed by your account.
+        *   **Action:** Double-check if the device is claimed with your account. If correct, please **contact support**.
+*   **❌ Error: `401 Unauthorized`**
+    *   **Message:** `""`
+        *   **Meaning:** You are not logged in.
+        *   **Action:** Try logging in again. If error persist, please **contact support**.
 
 The "sensors" array contains the configued wireless sensors, the "wiredSensors" contains the configured wired sensors.
 For IDOL65 these will be null and instead the "cameraStatus" will be filled like so
@@ -244,7 +284,34 @@ This example is for a DOL53 - an ammonia sensor.
 }
 ```
 
-On a 200 OK the sensor is added to the device.
+After attempting to add a new sensor to the device, here are the possible outcomes:
+
+*   **✅ Success: `200 OK`**
+    *   The sensor is succesfully created.
+
+*   **❌ Error: `400 Bad request`**
+    *   **Message:** `"Cannot add sensor to device x"`
+        *   **Meaning:** The device is not claimed by your account and/or the device is not an IDOL64.
+        *   **Action:** Double-check if the device is claimed with your account and that is an IDOL64. If correct, please **contact support**.
+    *   **Message:** `"Device has not been online yet"`
+        *   **Meaning:** The device hasn't been online yet.
+        *   **Action:** Try connecting the device. If the device is struggling to get online, please **contact support**.
+    *   **Message:** `"Cannot add sensor x, y, the name or devEui is already in use on this gateway"`
+        *   **Meaning:** The device already contains a sensor with the same name or DevEui.
+        *   **Action:** Double check if the device has already that sensor, or the same name.
+    *   **Message:** `"Device is not online, so cannot add sensor"`
+        *   **Meaning:** The device is not connected to the internet.
+        *   **Action:** Double check if the device has connection to the internet. If correct, please **contact support**.
+    *   **Message:** `"unable to add sensor to device"`
+        *   **Meaning:** API Error.
+        *   **Action:** Try again. If the error persist, please **contact support** with the api error.      
+*   **❌ Error: `401 Unauthorized`**
+    *   **Message:** `""`
+        *   **Meaning:** You are not logged in.
+        *   **Action:** Try logging in again. If error persist, please **contact support**.
+
+
+
 We can verify that the sensor has indeed been added to the device by calling the device information endpoint again. 
 Verify by showing the device details from 
 
@@ -305,7 +372,82 @@ The ports 1, 2, 3 and 4 are available for configuration.
 Like the PUT operation suggests, this endpoint will override the current configuration with the new configuration from the request.
 
 Once again you can verify with the `GET /api/devices/{mac}` endpoint
+After attempting to add a new wired sensor to the device, here are the possible outcomes:
 
+*   **✅ Success: `200 OK`**
+    *   The wired sensor is succesfully created.
+
+*   **❌ Error: `400 Bad request`**
+    *   **Message:** `"Cannot add wired sensors to this device"`
+        *   **Meaning:** The device is not claimed by your account and/or the device is not an IDOL64.
+        *   **Action:** Double-check if the device is claimed with your account and that is an IDOL64. If correct, please **contact support**.
+    *   **Message:** `"Device is currently offline, cannot configure wiredSensors"`
+        *   **Meaning:** The device is not connected to the internet.
+        *   **Action:** Double check if the device has connection to the internet. If correct, please **contact support**. 
+*   **❌ Error: `401 Unauthorized`**
+    *   **Message:** `""`
+        *   **Meaning:** You are not logged in.
+        *   **Action:** Try logging in again. If error persist, please **contact support**.
+
+## Checking if the device is online
+To get an overview if the devices specified in the request are online. An array of mac addresses is required.
+
+`GET /api/devices/online`
+
+```json
+[
+  {
+    "mac": "00abcd1234ef",
+    "isOnline": true
+  },
+  {
+    "mac": "00abcd1234eg",
+    "isOnline": false
+  }
+]
+```
+After attempting to get the devices status, here are the possible outcomes:
+
+*   **✅ Success: `200 OK`**
+    *   The list of devices status **CLAIMED** by the account is succesfully retrieved.
+
+*   **❌ Error: `400 Bad Request`**
+    *   **Message:** `"No mac address specified"`
+        *   **Meaning:** The array of mac addresses is empty.
+        *   **Action:** Double-check and try again with values in the array. If correct, please **contact support**.
+    *   **Message:** `"You don't own any of the provided mac addresses"`
+        *   **Meaning:** None of the mac addresses are claimed by the account.
+        *   **Action:** Double-check if the devices are claimed. If correct, please **contact support**.  
+*   **❌ Error: `401 Unauthorized`**
+    *   **Message:** `""`
+        *   **Meaning:** You are not logged in.
+        *   **Action:** Try logging in again. If error persist, please **contact support**.
+
+
+## Get images from device
+To request images from the devices IDOL65. A single device per request. This request might take some time.
+
+`POST /api/devices/{mac}/getImage`
+
+After attempting to get images, here are the possible outcomes:
+
+*   **✅ Success: `200 OK`**
+    *   The file will be ready to download. It will write the byte-array content to the response.
+
+*   **❌ Error: `400 Bad Request`**
+    *   **Message:** `"Has no claim on device x"`
+        *   **Meaning:** The device is not claimed by the account.
+        *   **Action:** Double-check and try again. If correct, please **contact support**.
+    *   **Message:** `"x's device type IDOL63/IDOL64, only IDOL65 can generate images"`
+        *   **Meaning:** The device isn't an IDOL65, only IDOL65 can generate images 
+        *   **Action:** Double-check the device. If correct, please **contact support**.
+    *   **Message:** `"device is either offline or bad internet connection"`
+        *   **Meaning:** The device is offline or has bad connection, so it takes too long to get the images
+        *   **Action:** Double-check the device and try again. If the issue persist, please **contact support**.    
+*   **❌ Error: `401 Unauthorized`**
+    *   **Message:** `""`
+        *   **Meaning:** You are not logged in.
+        *   **Action:** Try logging in again. If error persist, please **contact support**.
 
 ##  Getting data
 
