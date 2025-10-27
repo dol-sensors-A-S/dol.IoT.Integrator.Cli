@@ -660,3 +660,18 @@ code 3 = "Critical".
   ]
 }
 ```
+
+
+## Common Errors
+
+*   **`401 Unauthorized`**
+    *   **Meaning:** You are not logged in.
+    *   **Solution:** Check that your API token is correct and included in the request.
+
+*   **`403 Forbidden`**
+    *   **Meaning:** Your account is not an integrator.
+    *   **Solution:** Your account needs to be an integrator. Please contact support.
+
+*   **`400 Bad Request` / `404 Not Found`**
+    *   **Meaning:** The most common cause is that your account has not claimed the target device, so the request cannot be completed.
+    *   **Solution:** Verify that you have successfully claimed the device before making this request.
