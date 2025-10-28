@@ -493,7 +493,7 @@ The datamessages has the following format
 }
 ```
 
-For IDOL65 (pig weighing cameras) -  the messages have some additional properties. 
+For IDOL65 (pig weighing cameras) -  the messages have some additional properties. For more information about the iDOL65 check https://github.com/dol-sensors-A-S/dol.IoT.Models/blob/master/src/dol.IoT.Models/Messages/IDOL65%20message%20overview.md
 Example 
 ```json
 {
@@ -505,12 +505,6 @@ Example
   "timespan": 3600, // seconds since last weight update
   "sd": 7.47, // standard deviation
   "skewness": 2.69,
-  "lastCycleCount": 401, // weight calculations for the last timespan
-  "lastCycleMeanWeight": 108.21, // mean weight over last timespan,
-  "lastCycleMinWeight": 93.1,
-  "lastCycleMaxWeight": 123.55,
-  "lastCycleStandardDeviation": 8.12,
-  "lastCycleSkewness": 2.12,
   "withinSpec": true
   "deviceId": "ddeecdff015f",
   "sensorId": "ddeecdff015f",
@@ -522,6 +516,25 @@ Example
   "_ts": 1700573015 // unix time stamp in seconds of when it was saved 
 }
 ```
+| Name   | Type   | Description | Mandatory |
+| :----: | :----: | :----: | :----: |
+| id | string | Unique identifier of the data message | Yes |
+| deviceId | string | Unique identifier of the device | Yes |
+| sensorId | string | Unique identifier of the sensor | Yes |
+| sensorName | string | Name identifier of the sensor | Yes |
+| value | decimal | Measurement of the sensor  | No |
+| data | string | Empty value (null) | No |
+| type | string | Type of Measurement (Weight, Temperature,..)| Yes |
+| unit | string | Unit of the measurement (kg, C,..) | Yes |
+| gatewayId | string | Chirpstack unique identifier for the device | No |
+| withinSpec | bool | If true the device has recorded 300 or more data points in the last 24 hours. This meets the minimum threshold for reliable statistical evidence. | No |
+| count | int | Total weight data points calculations in the last 24h | No |
+| countDelta | int | The number of new weight data points calculations since the previous report | No |
+| minWeight  | double | The minimum weight calculated over the 24h | No |
+| maxWeight  | double | The maximum weight calculated over the 24h | No |
+| timespan  | long | Total number of seconds since the last weight update | No |
+| sd  | double | The standard deviation over the 24h| No |
+| skewness  | double | The skewness over the 24h| No |
 
 ### Device status messages
 
@@ -542,11 +555,11 @@ Will notify on a connection change for the device. Can be either deviceConnected
     "timestamp": 1700151990
 }
 ```
-| Name   | Type   | Description |
-| :----: | :----: | :----: |
-| deviceId | string | Unique identifier of the device |
-| state | string | State of the device ("deviceConnected"/"deviceDisconnected") |
-| timestamp | long | Unix timestamp indicating when this message was generated |
+| Name   | Type   | Description | Mandatory |
+| :----: | :----: | :----: | :----: |
+| deviceId | string | Unique identifier of the device | Yes |
+| state | string | State of the device ("deviceConnected"/"deviceDisconnected") | Yes |
+| timestamp | long | Unix timestamp indicating when this message was generated | Yes |
 
 #### Subject/label = "SensorsInactive"
 
@@ -572,18 +585,19 @@ If a sensor starts sending data again, a new "SensorsInactive" message will get 
 }
 ```
 ##### SensorsInactive Message
-| Name   | Type   | Description|
-| :----: | :----: | :----: |
-| deviceId | string | Unique identifier of the IDOL64 device reporting the inactive sensors |
-| inactiveSensors | Array\<SensorObject\> | List of LoRa sensors that have stopped sending data |
-| timestamp | long | Unix timestamp indicating when this message was generated |
+| Name   | Type   | Description | Mandatory |
+| :----: | :----: | :----: | :----: |
+| deviceId | string | Unique identifier of the IDOL64 device reporting the inactive sensors | Yes |
+| inactiveSensors | Array\<SensorObject\> | List of LoRa sensors that have stopped sending data | Yes |
+| timestamp | long | Unix timestamp indicating when this message was generated | Yes |
 
 ##### SensorObject (Array Element)
-| Name   | Type   | Description|
-| :----: | :----: | :----: |
-| name | string | Human-readable name of the sensor |
-| devEui | string | Unique LoRa device identifier (DevEUI) of the sensor |
-| lastSeenAt | string | ISO 8601 timestamp of when the sensor was last heard from |
+| Name   | Type   | Description| Mandatory |
+| :----: | :----: | :----: | :----: |
+| name | string | Human-readable name of the sensor | Yes |
+| devEui | string | Unique LoRa device identifier (DevEUI) of the sensor | Yes |
+| lastSeenAt | string | ISO 8601 timestamp of when the sensor was last heard from | Yes |
+
 #### Subject/label = "VisionStatus"
 
 For IDOL65 devices. 
@@ -610,30 +624,32 @@ Will report any changes to the status of the camera.
 ```
 #### Vision Status Message
 
-| Name | Type | Description |
-| :--- | :--- | :--- |
-| `deviceId` | string | Unique identifier of the IDOL65 device |
-| `visionStatus` | Object | Contains the vision system status information |
-| `timestamp` | long | Unix timestamp indicating when this message was generated |
+| Name | Type | Description | Mandatory |
+| :--- | :--- | :--- | :--- |
+| `deviceId` | string | Unique identifier of the IDOL65 device | Yes |
+| `visionStatus` | Object | Contains the vision system status information | Yes |
+| `timestamp` | long | Unix timestamp indicating when this message was generated | Yes |
 
 #### VisionStatus Object
 
-| Name | Type | Description |
-| :--- | :--- | :--- |
-| `isDirty` | string | Indicates if the camera lens is dirty ("Dirty"/"Clean"/"VeryDirty") |
-| `isDetectingDirty` | string | Indicates if the system is detecting dirt ("True"/"False") |
-| `IsDeviceManuallyCalibrated` | string | Indicates if manual calibration was performed ("True"/"False") |
-| `calibration` | string | Current calibration status ("Required"/"Done"/"Started") |
-| `calibrationLastUpdate` | string | ISO 8601 timestamp of the last calibration update |
-| `messages` | Array\<MessageObject\> | List of status messages from the vision system |
+| Name | Type | Description | Mandatory |
+| :--- | :--- | :--- | :--- |
+| `isDirty` | string | Indicates if the camera lens is dirty ("Dirty"/"Clean"/"VeryDirty") | No |
+| `isDetectingDirty` | string | Indicates if the system is detecting dirt ("True"/"False") | No |
+| `IsDeviceManuallyCalibrated` | string | Indicates if manual calibration was performed ("True"/"False") | No |
+| `calibration` | string | Current calibration status ("Required"/"Done"/"Started") | No |
+| `calibrationLastUpdate` | string | ISO 8601 timestamp of the last calibration update | No |
+| `messages` | Array\<MessageObject\> | List of status messages from the vision system | Yes |
+| `lastWeightCacheClearCount ` | string | Count of the last weight cache clear | No |
+| `lastWeightCacheClearedUpdate ` | string | ISO 8601 timestamp of the last weight cache cleared update | No |
 
 #### MessageObject (Array Element)
 
-| Name | Type | Description |
-| :--- | :--- | :--- |
-| `MessageId` | integer | Unique identifier for the message |
-| `MessageText` | string | Human-readable message text |
-| `MessagePayload` | string | Additional payload data (if any) |
+| Name | Type | Description | Mandatory |
+| :--- | :--- | :--- | :--- |
+| `MessageId` | integer | Unique identifier for the message | Yes |
+| `MessageText` | string | Human-readable message text | No |
+| `MessagePayload` | string | Additional payload data (if any) | No |
 
 ### Subject/label = "SensorBatteryUpdates"
 
@@ -661,6 +677,18 @@ code 3 = "Critical".
 }
 ```
 
+| Name | Type | Description | Mandatory |
+| :--- | :--- | :--- | :--- |
+| `deviceId` | string | Unique identifier of the device | Yes |
+| `timestamp ` | long | Unix timestamp indicating when this message was generated | Yes |
+| `batteryUpdates ` | Array\<BatteryUpdate\> | List of battery status from the sensors | Yes |
+
+ BatteryUpdate (Array Element)
+| Name | Type | Description | Mandatory |
+| :--- | :--- | :--- | :--- |
+| `DevEui ` | string | Unique identifier for the sensor | Yes |
+| `Code ` | int | Code indicating the status | Yes |
+| `BatteryStatus ` | string | Human-readable battery status| Yes |
 
 ## Common Errors
 
