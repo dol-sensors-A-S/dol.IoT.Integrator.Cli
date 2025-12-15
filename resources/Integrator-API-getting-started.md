@@ -690,6 +690,20 @@ code 3 = "Critical".
 | `Code ` | int | Code indicating the status | Yes |
 | `BatteryStatus ` | string | Human-readable battery status| Yes |
 
+## Health Endpoint
+
+To request the health status of the API.
+
+`GET /api/health`
+
+```json
+{
+  "status": "Healthy",
+  "timestamp": "2025-12-15T10:49:26.0494703Z"
+}
+```
+
+
 ## Common Errors
 
 *   **`401 Unauthorized`**
