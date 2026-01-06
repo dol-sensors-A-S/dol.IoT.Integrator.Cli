@@ -448,6 +448,56 @@ After attempting to get images, here are the possible outcomes:
     *   **Message:** `""`
         *   **Meaning:** You are not logged in.
         *   **Action:** Try logging in again. If error persist, please **contact support**.
+     
+
+## Calibrate the device
+We provide two API endpoints for device calibration. We strongly recommend using the auto calibration endpoint for all standard scenarios.
+
+Reserve the manual calibration only for exceptional cases where auto calibration has failed or specific adjustments are required.
+
+Use this endpoint for a hands-off, automated calibration process.
+
+`POST /api/devices/{mac}/calibrate`
+
+
+For the manual calibration use the following endpoint:
+
+`POST /api/devices/{mac}/manualCalibrate`
+
+It requires a request body with three mandatory attributes.
+* (float) AngleX of the camera must be between -4 to 4.
+* (float) AngleY of the camera must be between -4 to 4.
+* (float) Height of the camera from the ground must be between 2000 to 2500
+  
+And example request:
+```json
+{
+  "angleX": 0,
+  "angleY": 0,
+  "height": 2300
+}
+```
+
+After attempting to calibrate the device, here are the possible outcomes:
+
+*   **✅ Success: `200 OK`**
+    *   The command has been sent succesfully to device, and it will start the calibration process.
+
+*   **❌ Error: `400 Bad Request`**
+    *   **Message:** `"Has no claim on device x"`
+        *   **Meaning:** The device is not claimed by the account.
+        *   **Action:** Double-check and try again. If correct, please **contact support**.
+    *   **Message:** `"x's device type IDOL63/IDOL64, only IDOL65 can be calibrated"`
+        *   **Meaning:** The device isn't an IDOL65, only IDOL65 can be calibrated.
+        *   **Action:** Double-check the device. If correct, please **contact support**.
+*   **❌ Error: `409 Conflict`**
+    *   **Message:** `"Device is not online"`
+        *   **Meaning:** The device is offline or has bad connection.
+        *   **Action:** Double-check the device and try again. If the issue persist, please **contact support**.    
+*   **❌ Error: `401 Unauthorized`**
+    *   **Message:** `""`
+        *   **Meaning:** You are not logged in.
+        *   **Action:** Try logging in again. If error persist, please **contact support**.
 
 ##  Getting data
 
